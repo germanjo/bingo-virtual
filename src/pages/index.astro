@@ -1,0 +1,29 @@
+---
+import "../styles/global.css";
+import BingoBoard from '../components/BingoBoard';
+---
+
+<html lang="es">
+	<head>
+		<title>Bingo Capibara</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<style>
+			html,
+			body {
+				font-family: system-ui;
+				margin: 0;
+			}
+			body {
+				padding: 2rem;
+			}
+		</style>
+	</head>
+	<body>
+		<main>
+			<BingoBoard client:load />
+		</main>
+	</body>
+</html>
