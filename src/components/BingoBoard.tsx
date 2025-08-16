@@ -110,7 +110,7 @@ export default function BingoBoard() {
         {allNumbers.map((num) => (
           <div
             key={num}
-            className={`w-7 h-7 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center 
+            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center 
               text-xs sm:text-sm font-semibold border transition-all duration-300
               ${num === current ? "bg-yellow-400 text-black scale-110 shadow" :
                 called.includes(num)
