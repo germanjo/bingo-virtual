@@ -1,58 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useBingoGame } from '../hooks/useBingoGame';
 
 const allNumbers = Array.from({ length: 90 }, (_, i) => i + 1);
 
 export default function BingoBoard() {
-  const [remaining, setRemaining] = useState([...allNumbers]);
-  const [called, setCalled] = useState<number[]>([]);
-  const [current, setCurrent] = useState<number | null>(null);
-  const [autoDraw, setAutoDraw] = useState(false);
-  const [intervalSeconds, setIntervalSeconds] = useState(3);
-  const [showRestartMessage, setShowRestartMessage] = useState(false);
-
-  // Mirror `remaining` so the stable drawNumber callback can read the latest
-  // pool without re-creating on every draw. The interval is then created once
-  // when autoDraw turns on and runs until the game ends or the user pauses.
-  const remainingRef = useRef(remaining);
-  useEffect(() => {
-    remainingRef.current = remaining;
-  }, [remaining]);
-
-  const drawNumber = useCallback(() => {
-    const pool = remainingRef.current;
-    if (pool.length === 0) {
-      setAutoDraw(false);
-      return;
-    }
-    const index = Math.floor(Math.random() * pool.length);
-    const number = pool[index];
-    setCurrent(number);
-    setCalled((prev) => [...prev, number]);
-    setRemaining((prev) => prev.filter((n) => n !== number));
-  }, []);
-
-  useEffect(() => {
-    if (!autoDraw) return;
-    const id = setInterval(drawNumber, intervalSeconds * 1000);
-    return () => clearInterval(id);
-  }, [autoDraw, intervalSeconds, drawNumber]);
-
-  function resetGame() {
-    setRemaining([...allNumbers]);
-    setCalled([]);
-    setCurrent(null);
-    setAutoDraw(false);
-    setShowRestartMessage(true);
-    setTimeout(() => setShowRestartMessage(false), 3000);
-  }
+  const game = useBingoGame();
+  const calledSet = useMemo(() => new Set(game.called), [game.called]);
 
   return (
     <div className="min-h-screen bg-pink-100 flex flex-col items-center p-8">
       <h1 className="text-4xl font-bold mb-6 text-rose-700">🎉 Bingo 🎉</h1>
 
       <AnimatePresence>
-        {showRestartMessage && (
+        {game.restartMessage && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -65,34 +26,34 @@ export default function BingoBoard() {
       </AnimatePresence>
 
       <motion.div
-        key={current}
+        key={game.current}
         initial={{ scale: 0, rotate: -90 }}
         animate={{ scale: 1, rotate: 0 }}
-        transition={{ type: "spring", stiffness: 300 }}
+        transition={{ type: 'spring', stiffness: 300 }}
         className="bg-white rounded-full w-32 h-32 flex items-center justify-center shadow-lg mb-6 text-4xl font-extrabold text-rose-600"
       >
-        {current ?? "🎲"}
+        {game.current ?? '🎲'}
       </motion.div>
 
       <div className="flex flex-wrap justify-center gap-4 mb-4">
         <button
-          onClick={drawNumber}
-          disabled={remaining.length === 0 || autoDraw}
+          onClick={game.drawNumber}
+          disabled={game.remaining.length === 0 || game.isAutoDraw}
           className="cursor-pointer bg-rose-600 text-white py-2 px-6 rounded-xl text-lg hover:bg-rose-700 disabled:opacity-50"
         >
-          {remaining.length === 0 ? "¡Fin del juego!" : "Sacar número"}
+          {game.remaining.length === 0 ? '¡Fin del juego!' : 'Sacar número'}
         </button>
 
         <button
-          onClick={() => setAutoDraw(!autoDraw)}
-          disabled={remaining.length === 0}
-          className={`cursor-pointer py-2 px-6 rounded-xl text-lg ${autoDraw ? "bg-gray-400" : "bg-green-500 hover:bg-green-600"} text-white`}
+          onClick={game.toggleAutoDraw}
+          disabled={game.remaining.length === 0}
+          className={`cursor-pointer py-2 px-6 rounded-xl text-lg ${game.isAutoDraw ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'} text-white`}
         >
-          {autoDraw ? "Detener" : "Auto"}
+          {game.isAutoDraw ? 'Detener' : 'Auto'}
         </button>
 
         <button
-          onClick={resetGame}
+          onClick={game.resetGame}
           className="cursor-pointer py-2 px-6 rounded-xl text-lg bg-yellow-500 hover:bg-yellow-600 text-black"
         >
           Reiniciar
@@ -103,8 +64,8 @@ export default function BingoBoard() {
         <label className="mr-2 text-rose-700 font-medium">Intervalo (segundos):</label>
         <input
           type="number"
-          value={intervalSeconds}
-          onChange={(e) => setIntervalSeconds(Number(e.target.value))}
+          value={game.intervalSeconds}
+          onChange={(e) => game.setIntervalSeconds(Number(e.target.value))}
           className="px-3 py-1 rounded border border-gray-300 text-center w-24"
           min={1}
           step={1}
@@ -117,10 +78,10 @@ export default function BingoBoard() {
             key={num}
             className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center 
               text-xs sm:text-sm font-semibold border transition-all duration-300
-              ${num === current ? "bg-yellow-400 text-black scale-110 shadow" :
-                called.includes(num)
-                  ? "bg-rose-600 text-white"
-                  : "bg-white text-rose-600"}`}
+              ${num === game.current ? 'bg-yellow-400 text-black scale-110 shadow' :
+                calledSet.has(num)
+                  ? 'bg-rose-600 text-white'
+                  : 'bg-white text-rose-600'}`}
           >
             {num}
           </div>

@@ -7,7 +7,9 @@
     "build": "astro build",
     "check": "astro check",
     "dev": "astro dev",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@astrojs/react": "^4.3.0",
@@ -22,6 +24,11 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "typescript": "^5.9.3"
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "jsdom": "^30.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
   }
 }
