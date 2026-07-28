@@ -1,14 +1,49 @@
 # bingo-virtual
-# Astro + React Example
+
+A 90-number virtual bingo caller (Argentinian/European style). One screen, no player cards, no backend — Astro renders the page, React runs the board, Framer Motion handles the number pop.
+
+## Quick start
 
 ```sh
-npm create astro@latest -- --template framework-react
+npm install
+npm run dev
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/framework-react)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/framework-react)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/framework-react/devcontainer.json)
+Open http://localhost:4321.
 
-This example showcases Astro working with [React](https://react.dev).
+## Commands
 
-Write your React components as `.jsx` or `.tsx` files in your project.
+| Script | What it does |
+|--------|--------------|
+| `npm run dev` | Dev server with HMR |
+| `npm run build` | Static build to `./dist` |
+| `npm run preview` | Preview the build locally |
+| `npx astro check` | TypeScript and Astro diagnostics |
+
+## How to play
+
+- **Sacar número** draws the next number. The current number pops in with a spring animation.
+- The 10x9 grid shows every drawn number in red; the latest stays highlighted in yellow.
+- **Auto** runs a hands-free draw loop. **Detener** pauses it. The interval (in seconds) is configurable below the buttons.
+- **Reiniciar** starts a new game.
+
+## Stack
+
+| Layer | Choice |
+|-------|--------|
+| Framework | Astro 5 (static output) |
+| UI | React 18 island (`client:load`) |
+| Styling | Tailwind CSS 4 |
+| Animation | Framer Motion 12 |
+
+## Project layout
+
+```
+src/
+  components/
+    BingoBoard.tsx   # game state, controls, grid
+  pages/
+    index.astro      # mounts <BingoBoard client:load />
+  styles/
+    global.css       # tailwind import
+```
