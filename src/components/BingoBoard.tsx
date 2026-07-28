@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const allNumbers = Array.from({ length: 90 }, (_, i) => i + 1);
@@ -10,19 +10,35 @@ export default function BingoBoard() {
   const [autoDraw, setAutoDraw] = useState(false);
   const [intervalSeconds, setIntervalSeconds] = useState(3);
   const [showRestartMessage, setShowRestartMessage] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  function drawNumber() {
-    if (remaining.length === 0) return;
-    const index = Math.floor(Math.random() * remaining.length);
-    const number = remaining[index];
+  // Mirror `remaining` so the stable drawNumber callback can read the latest
+  // pool without re-creating on every draw. The interval is then created once
+  // when autoDraw turns on and runs until the game ends or the user pauses.
+  const remainingRef = useRef(remaining);
+  useEffect(() => {
+    remainingRef.current = remaining;
+  }, [remaining]);
+
+  const drawNumber = useCallback(() => {
+    const pool = remainingRef.current;
+    if (pool.length === 0) {
+      setAutoDraw(false);
+      return;
+    }
+    const index = Math.floor(Math.random() * pool.length);
+    const number = pool[index];
     setCurrent(number);
     setCalled((prev) => [...prev, number]);
     setRemaining((prev) => prev.filter((n) => n !== number));
-  }
+  }, []);
+
+  useEffect(() => {
+    if (!autoDraw) return;
+    const id = setInterval(drawNumber, intervalSeconds * 1000);
+    return () => clearInterval(id);
+  }, [autoDraw, intervalSeconds, drawNumber]);
 
   function resetGame() {
-    if (intervalRef.current) clearInterval(intervalRef.current);
     setRemaining([...allNumbers]);
     setCalled([]);
     setCurrent(null);
@@ -30,17 +46,6 @@ export default function BingoBoard() {
     setShowRestartMessage(true);
     setTimeout(() => setShowRestartMessage(false), 3000);
   }
-
-  useEffect(() => {
-    if (autoDraw && remaining.length > 0) {
-      intervalRef.current = setInterval(drawNumber, intervalSeconds * 1000);
-    } else {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    }
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [autoDraw, intervalSeconds, remaining]);
 
   return (
     <div className="min-h-screen bg-pink-100 flex flex-col items-center p-8">
