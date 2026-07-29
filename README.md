@@ -13,11 +13,11 @@ Open http://localhost:4321.
 
 ## Commands
 
-| Script | What it does |
-|--------|--------------|
-| `npm run dev` | Dev server with HMR |
-| `npm run build` | Static build to `./dist` |
-| `npm run preview` | Preview the build locally |
+| Script            | What it does                     |
+| ----------------- | -------------------------------- |
+| `npm run dev`     | Dev server with HMR              |
+| `npm run build`   | Static build to `./dist`         |
+| `npm run preview` | Preview the build locally        |
 | `npx astro check` | TypeScript and Astro diagnostics |
 
 ## How to play
@@ -29,12 +29,12 @@ Open http://localhost:4321.
 
 ## Stack
 
-| Layer | Choice |
-|-------|--------|
-| Framework | Astro 5 (static output) |
-| UI | React 18 island (`client:load`) |
-| Styling | Tailwind CSS 4 |
-| Animation | Framer Motion 12 |
+| Layer     | Choice                          |
+| --------- | ------------------------------- |
+| Framework | Astro 5 (static output)         |
+| UI        | React 18 island (`client:load`) |
+| Styling   | Tailwind CSS 4                  |
+| Animation | Framer Motion 12                |
 
 ## Project layout
 

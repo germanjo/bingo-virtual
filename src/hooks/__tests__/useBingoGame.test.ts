@@ -16,7 +16,7 @@ describe('useBingoGame', () => {
       const { result } = renderHook(() => useBingoGame());
 
       expect(result.current.remaining).toEqual(
-        Array.from({ length: 90 }, (_, i) => i + 1)
+        Array.from({ length: 90 }, (_, i) => i + 1),
       );
       expect(result.current.remaining).toHaveLength(90);
       expect(result.current.called).toEqual([]);

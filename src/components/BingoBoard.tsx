@@ -9,8 +9,8 @@ export default function BingoBoard() {
   const calledSet = useMemo(() => new Set(game.called), [game.called]);
 
   return (
-    <div className="min-h-screen bg-pink-100 flex flex-col items-center p-8">
-      <h1 className="text-4xl font-bold mb-6 text-rose-700">🎉 Bingo 🎉</h1>
+    <div className="flex min-h-screen flex-col items-center bg-pink-100 p-8">
+      <h1 className="mb-6 text-4xl font-bold text-rose-700">🎉 Bingo 🎉</h1>
 
       <AnimatePresence>
         {game.restartMessage && (
@@ -18,7 +18,7 @@ export default function BingoBoard() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="mb-4 px-6 py-3 bg-yellow-200 text-yellow-800 font-semibold rounded shadow"
+            className="mb-4 rounded bg-yellow-200 px-6 py-3 font-semibold text-yellow-800 shadow"
           >
             ¡Nuevo juego iniciado!
           </motion.div>
@@ -30,16 +30,16 @@ export default function BingoBoard() {
         initial={{ scale: 0, rotate: -90 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{ type: 'spring', stiffness: 300 }}
-        className="bg-white rounded-full w-32 h-32 flex items-center justify-center shadow-lg mb-6 text-4xl font-extrabold text-rose-600"
+        className="mb-6 flex h-32 w-32 items-center justify-center rounded-full bg-white text-4xl font-extrabold text-rose-600 shadow-lg"
       >
         {game.current ?? '🎲'}
       </motion.div>
 
-      <div className="flex flex-wrap justify-center gap-4 mb-4">
+      <div className="mb-4 flex flex-wrap justify-center gap-4">
         <button
           onClick={game.drawNumber}
           disabled={game.remaining.length === 0 || game.isAutoDraw}
-          className="cursor-pointer bg-rose-600 text-white py-2 px-6 rounded-xl text-lg hover:bg-rose-700 disabled:opacity-50"
+          className="cursor-pointer rounded-xl bg-rose-600 px-6 py-2 text-lg text-white hover:bg-rose-700 disabled:opacity-50"
         >
           {game.remaining.length === 0 ? '¡Fin del juego!' : 'Sacar número'}
         </button>
@@ -47,26 +47,28 @@ export default function BingoBoard() {
         <button
           onClick={game.toggleAutoDraw}
           disabled={game.remaining.length === 0}
-          className={`cursor-pointer py-2 px-6 rounded-xl text-lg ${game.isAutoDraw ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'} text-white`}
+          className={`cursor-pointer rounded-xl px-6 py-2 text-lg ${game.isAutoDraw ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'} text-white`}
         >
           {game.isAutoDraw ? 'Detener' : 'Auto'}
         </button>
 
         <button
           onClick={game.resetGame}
-          className="cursor-pointer py-2 px-6 rounded-xl text-lg bg-yellow-500 hover:bg-yellow-600 text-black"
+          className="cursor-pointer rounded-xl bg-yellow-500 px-6 py-2 text-lg text-black hover:bg-yellow-600"
         >
           Reiniciar
         </button>
       </div>
 
       <div className="mb-6">
-        <label className="mr-2 text-rose-700 font-medium">Intervalo (segundos):</label>
+        <label className="mr-2 font-medium text-rose-700">
+          Intervalo (segundos):
+        </label>
         <input
           type="number"
           value={game.intervalSeconds}
           onChange={(e) => game.setIntervalSeconds(Number(e.target.value))}
-          className="px-3 py-1 rounded border border-gray-300 text-center w-24"
+          className="w-24 rounded border border-gray-300 px-3 py-1 text-center"
           min={1}
           step={1}
         />
@@ -76,12 +78,13 @@ export default function BingoBoard() {
         {allNumbers.map((num) => (
           <div
             key={num}
-            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center 
-              text-xs sm:text-sm font-semibold border transition-all duration-300
-              ${num === game.current ? 'bg-yellow-400 text-black scale-110 shadow' :
-                calledSet.has(num)
+            className={`flex h-8 w-8 items-center justify-center rounded-lg border text-xs font-semibold transition-all duration-300 sm:h-10 sm:w-10 sm:text-sm ${
+              num === game.current
+                ? 'scale-110 bg-yellow-400 text-black shadow'
+                : calledSet.has(num)
                   ? 'bg-rose-600 text-white'
-                  : 'bg-white text-rose-600'}`}
+                  : 'bg-white text-rose-600'
+            }`}
           >
             {num}
           </div>

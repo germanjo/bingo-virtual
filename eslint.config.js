@@ -3,6 +3,7 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import astro from 'eslint-plugin-astro';
 import reactHooks from 'eslint-plugin-react-hooks';
+// @ts-ignore — eslint-plugin-jsx-a11y ships no type declarations
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default [
