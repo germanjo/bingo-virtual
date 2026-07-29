@@ -1,9 +1,7 @@
-// @ts-check
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import astro from 'eslint-plugin-astro';
 import reactHooks from 'eslint-plugin-react-hooks';
-// @ts-ignore — eslint-plugin-jsx-a11y ships no type declarations
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default [
@@ -43,10 +41,7 @@ export default [
     rules: jsxA11y.configs.recommended.rules,
   },
 
-  {
-    files: ['**/*.astro'],
-    ...astro.configs.recommended,
-  },
+  ...astro.configs.recommended,
 
   {
     files: ['**/*.test.ts', 'vitest.setup.ts'],
@@ -57,6 +52,14 @@ export default [
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
+    },
+  },
+
+  {
+    files: ['eslint.config.js'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
     },
   },
 

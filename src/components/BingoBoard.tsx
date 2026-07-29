@@ -61,10 +61,14 @@ export default function BingoBoard() {
       </div>
 
       <div className="mb-6">
-        <label className="mr-2 font-medium text-rose-700">
+        <label
+          htmlFor="interval-seconds"
+          className="mr-2 font-medium text-rose-700"
+        >
           Intervalo (segundos):
         </label>
         <input
+          id="interval-seconds"
           type="number"
           value={game.intervalSeconds}
           onChange={(e) => game.setIntervalSeconds(Number(e.target.value))}
