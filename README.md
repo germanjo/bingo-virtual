@@ -27,15 +27,18 @@ Open http://localhost:4321.
 ## How to play
 
 - **Sacar número** draws the next number. The current number pops in with a spring animation.
-- The 10x9 grid shows every drawn number in red; the latest stays highlighted in yellow.
+- The 10x9 grid shows every drawn number in the selected primary color; the latest stays highlighted in yellow.
 - **Auto** runs a hands-free draw loop. **Detener** pauses it. The interval (in seconds) is configurable below the buttons.
 - **Reiniciar** starts a new game.
 
-## Local recovery
+## Local recovery and personalization
 
-The draw sequence and interval are saved automatically in this browser. Reloading restores the board **paused**; press **Auto** to resume. Restart clears the saved draw sequence, but keeps the interval.
+The draw sequence and interval are saved automatically in this browser. Reloading restores the board **paused**; press **Auto** to resume. Restart clears the saved draw sequence, but keeps the interval and personalization.
 
-Storage uses versioned `bingo-game` localStorage entry. Invalid saves fall back to defaults. If browser storage is unavailable or full, play continues with a warning, but recovery cannot be guaranteed. This is local recovery, not cross-device sync, a multi-game archive, or multi-tab collaboration; closing all private windows or clearing site data can erase it.
+- **Color principal** changes the main interface color. Number and button text switch between black and white for contrast.
+- Color preferences are remembered separately from the game.
+
+Storage uses versioned `bingo-game` and `bingo-preferences` localStorage entries. Invalid saves fall back to defaults. If browser storage is unavailable or full, play continues with a warning, but recovery cannot be guaranteed. This is local recovery, not cross-device sync, a multi-game archive, or multi-tab collaboration; closing all private windows or clearing site data can erase it.
 
 ## Stack
 
@@ -51,12 +54,12 @@ Storage uses versioned `bingo-game` localStorage entry. Invalid saves fall back 
 ```
 src/
   components/
-    BingoBoard.tsx   # controls and grid
+    BingoBoard.tsx   # controls, preferences and grid
   hooks/
     useBingoGame.ts  # draw/reset state and timers
     useStoredState.ts # post-mount localStorage recovery and saving
   lib/
-    bingoStorage.ts # shared defaults and save validation
+    bingoStorage.ts # shared defaults, save validation and contrast
   pages/
     index.astro      # mounts <BingoBoard client:load />
   styles/

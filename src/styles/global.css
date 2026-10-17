@@ -6,3 +6,12 @@
     font-family: system-ui;
   }
 }
+
+.bingo-text {
+  color: var(--bingo-text);
+}
+
+.bingo-primary {
+  background-color: var(--bingo-primary);
+  color: var(--bingo-contrast);
+}

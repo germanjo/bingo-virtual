@@ -97,4 +97,22 @@ describe('BingoBoard', () => {
     expect(endButton).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Auto' })).toBeDisabled();
   });
+  it('remembers primary color preferences independently of a game reset', () => {
+    const first = render(<BingoBoard />);
+    fireEvent.change(screen.getByLabelText('Color principal'), {
+      target: { value: '#ffffff' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Reiniciar' }));
+    first.unmount();
+    render(<BingoBoard />);
+    expect(screen.getByLabelText('Color principal')).toHaveValue('#ffffff');
+    expect(
+      screen
+        .getByRole('button', { name: 'Sacar número' })
+        .closest('.bingo-board'),
+    ).toHaveStyle({
+      '--bingo-primary': '#ffffff',
+      '--bingo-contrast': '#000000',
+    });
+  });
 });
