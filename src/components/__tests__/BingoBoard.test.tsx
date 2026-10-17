@@ -108,15 +108,21 @@ describe('BingoBoard', () => {
     expect(screen.getByRole('button', { name: 'Sacar número' })).toBeEnabled();
   });
 
-  it('remembers primary color preferences independently of a game reset', () => {
+  it('remembers primary color and sound preferences independently of a game reset', () => {
     const first = render(<BingoBoard />);
     fireEvent.change(screen.getByLabelText('Color principal'), {
       target: { value: '#ffffff' },
     });
+    fireEvent.click(
+      screen.getByRole('checkbox', { name: 'Sonido al sortear' }),
+    );
     fireEvent.click(screen.getByRole('button', { name: 'Reiniciar' }));
     first.unmount();
     render(<BingoBoard />);
     expect(screen.getByLabelText('Color principal')).toHaveValue('#ffffff');
+    expect(
+      screen.getByRole('checkbox', { name: 'Sonido al sortear' }),
+    ).toBeChecked();
     expect(
       screen
         .getByRole('button', { name: 'Sacar número' })

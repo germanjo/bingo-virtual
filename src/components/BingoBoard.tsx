@@ -2,6 +2,7 @@ import { useMemo, type CSSProperties } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBingoGame } from '../hooks/useBingoGame';
 import { useStoredState } from '../hooks/useStoredState';
+import { useDrawSound } from '../hooks/useDrawSound';
 import {
   allNumbers,
   contrastColor,
@@ -17,7 +18,8 @@ export default function BingoBoard() {
     defaultPreferences,
     isPreferences,
   );
-  const { primaryColor } = preferences.value;
+  const { primaryColor, soundEnabled } = preferences.value;
+  const unlockAudio = useDrawSound(game.current, soundEnabled);
   const ready = game.ready && preferences.ready;
   const finished = game.remaining.length === 0;
   const contrast = contrastColor(primaryColor);
@@ -70,7 +72,10 @@ export default function BingoBoard() {
 
       <div className="mb-4 flex flex-wrap justify-center gap-4">
         <button
-          onClick={game.drawNumber}
+          onClick={() => {
+            unlockAudio();
+            game.drawNumber();
+          }}
           disabled={!ready || finished || game.isAutoDraw}
           className="bingo-primary cursor-pointer rounded-xl px-6 py-2 text-lg hover:brightness-90 disabled:opacity-50"
         >
@@ -78,7 +83,10 @@ export default function BingoBoard() {
         </button>
 
         <button
-          onClick={game.toggleAutoDraw}
+          onClick={() => {
+            unlockAudio();
+            game.toggleAutoDraw();
+          }}
           disabled={!ready || finished}
           className={`cursor-pointer rounded-xl px-6 py-2 text-lg ${game.isAutoDraw ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'} text-white`}
         >
@@ -131,6 +139,20 @@ export default function BingoBoard() {
           }
           className="h-9 w-12 cursor-pointer rounded border border-gray-300"
         />
+        <div className="flex items-center gap-2">
+          <input
+            id="draw-sound"
+            type="checkbox"
+            checked={soundEnabled}
+            onChange={(event) =>
+              preferences.setValue((prev) => ({
+                ...prev,
+                soundEnabled: event.target.checked,
+              }))
+            }
+          />
+          <label htmlFor="draw-sound">Sonido al sortear</label>
+        </div>
       </fieldset>
 
       <p className="mb-3 font-medium text-gray-800">

@@ -37,7 +37,8 @@ Open http://localhost:4321.
 The draw sequence and interval are saved automatically in this browser. Reloading restores the board **paused**; press **Auto** to resume. Restart clears the saved draw sequence, but keeps the interval and personalization.
 
 - **Color principal** changes the main interface color. Number and button text switch between black and white for contrast.
-- Color preferences are remembered separately from the game.
+- **Sonido al sortear** enables a short tone on new draws (off by default). Audio is unlocked by pressing a draw control; restoring a game is silent. Unsupported or blocked browser audio does not interrupt the game.
+- Color and sound preferences are remembered separately from the game.
 
 Storage uses versioned `bingo-game` and `bingo-preferences` localStorage entries. Invalid saves fall back to defaults. If browser storage is unavailable or full, play continues with a warning, but recovery cannot be guaranteed. This is local recovery, not cross-device sync, a multi-game archive, or multi-tab collaboration; closing all private windows or clearing site data can erase it.
 
@@ -59,6 +60,7 @@ src/
   hooks/
     useBingoGame.ts  # draw/reset state and timers
     useStoredState.ts # post-mount localStorage recovery and saving
+    useDrawSound.ts # optional, interaction-unlocked Web Audio tone
   lib/
     bingoStorage.ts # shared defaults, save validation and contrast
   pages/
