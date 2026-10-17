@@ -1,0 +1,37 @@
+# Game experience
+
+Objective: local game recovery, primary color, optional sound and clear game completion. Branch: `feat/game-experience`.
+Delivery: stacked-to-main (user-selected); approximately 800 authored changed lines, no push/PR. Runner: Vitest, ESLint, Prettier, Astro check/build.
+
+## Specs
+
+- S1: "me gustaría agregar el persistencia". Save the draw sequence and interval in this browser; restore with auto-draw paused. Validate saved input and keep the game usable if storage fails. Local storage is the accepted scope, not cross-device sync.
+- S2: "Con respecto a la personalizacion es el cambio del color principal". A color input changes the main interface color and remembers it locally; preserve readable contrasting number/button text.
+- S3: "las mejoras de fin de partida". Clearly announce all 90 numbers have been drawn, show progress and allow a new game through the existing restart action.
+- S4: "Dale, me parece bien lo de los pendientes." Accepted proposal: "agregar sonido como pendiente sencillo" and "sonido opcional". A locally remembered sound toggle enables a short sound for newly drawn numbers; unsupported/blocked audio must not interrupt the game or play on recovery.
+- S5: "la imagen dejamos por fuera porque pensé que usabamos una y quedo fuera". No image work; cards and PWA remain deferred. Preserve existing manual draw, auto toggle, interval and reset behavior.
+
+## Tasks
+
+- T1 [S1,S5] inline, own checks passed: persistence with validated storage and hook regressions. Risk: item 3 (shared draw/reset state), item 4 (timer and hydration ordering). Commit: pending.
+- T2 [S2,S5] inline, own checks passed: color preferences and board styling with contrast tests. Commit: pending.
+- T3 [S3,S4,S5] inline, own checks passed: completion feedback and optional browser audio; component/audio tests and README. Commit: pending.
+- T4 [S1-S5] independent verification passed; slice checks, local commits and native review pending. Chain strategy: stacked-to-main. Commit: pending.
+
+## Log
+
+- L1 Original request: "Perfecto, me gustaría agregar el persistencia, configuracion de interfaz y la imagen principal, las mejoras de fin de partida... Y los pendientes que no sean tan complejos"
+- L2 Clarification: "Dale, me parece bien lo de los pendientes. Con respecto a la personalizacion es el cambio del color principal, la imagen dejamos por fuera porque pensé que usabamos una y quedo fuera"
+- L3 Route: inline implementation; no writer trigger. Durable specifications track the multi-unit work and proof across checking/consent boundaries. Independent verification required by shared state/timer changes, not task size. No dependency additions planned.
+- L4 Baseline: eb8a8b0; clean main, ahead 2 of local origin/main. Engram writes blocked by unregistered host session: mirror pending. RDD on (global), read using approved escalation after sandbox access denial. PowerShell npm.ps1 is blocked by execution policy; use npm.cmd.
+- L5 Baseline `npm.cmd test`: 21/21 pass. RED: recovery/storage/board tests had 4 expected failures; audio test initially failed on missing module; contrast tests had 3 expected failures. GREEN intermediate: hook 22/22; board/audio 11/11. Existing APIs and Spanish UI remain; new UI copy uses neutral Spanish.
+- L6 Own final checks: 46/46 tests pass; lint passes (existing Astro parser notice); Prettier and git diff --check pass; Astro check 0 errors/0 warnings/4 hints from existing coverage/prettify.js; static build succeeds, 1 page. Check/build need approved escalation for Astro's user config access. Initial test typing error corrected before final check.
+- L7 Dependency gotcha: minimatch v10 override is incompatible with jsx-a11y's nested-control detection (calls the old default export). New checkbox uses explicit sibling input/label association rather than triggering that existing dependency failure; no dependency or lint config changes.
+- L8 Browser proof unavailable: IAB is unavailable and browser inventory is empty. No visual check or real-device audio check is claimed. Local Astro dev daemon launched at http://127.0.0.1:4321, pid 8720, for preview.
+- L9 Independent verifier passed all S1-S5: baseline 21/21, candidate 50/50 including four probes; deterministic manual/auto/pause/rejected-input/reset traces byte-identical to baseline (2545 bytes). Parent re-ran scratch differential test, 1/1 pass. Added the four regression probes as `src/__tests__/gameExperience.test.ts`; workspace suite now 50/50 and lint passes. No implementation changes were needed after independent verification.
+- L10 Current footprint approximately 800 authored changed lines including tests and tracking. Before any work-unit commit, ask-on-risk requires choosing stacked-to-main (independently landable units) or feature-branch-chain (integrate as a whole). No commits, push or PRs yet; publishing remains unauthorized. Suggested work-unit boundaries: storage/recovery, primary color, completion/sound, keeping tests/docs with each behavior.
+- L11 Native `review assess` (explicit escalation item 4) reports high/review_due but cannot classify untracked files without a canonical inventory. After the chain decision and coherent commit slicing, use native selectorless STATUS and exact returned transitions; never exclude feature files or infer approval. Native review and manual visual/audio checks remain pending. Engram mirror remains pending due host-session registration failure.
+- L12 Final types/build after adding probes: 0 errors/0 warnings/4 existing hints, 1 page built. Independent scratch and check log removed after removing both dependency junctions; workspace dependencies preserved. No further source changes planned before chain selection/review. Dev preview remains available locally.
+- L13 User decision (2026-10-17): "vamos por el recomendado stacked-to-main". Four cohesive review slices: local recovery, primary color, completion feedback, optional sound with cross-feature regression probes. Each retains its tests/docs; no push, PR creation or merge authorized. Local main already contains two previously unpushed commits; future remote delivery must account for those separately.
+- L14 Slice preparation preserves the complete final working tree and stages intermediate versions through Git's index. Standalone scratch copies validate each exact slice; `.atl/game-experience-slices.json` retains the temporary locations until the stack is complete. Boundaries: `feat/game-recovery` -> `feat/game-primary-color` -> `feat/game-completion` -> `feat/game-experience` (sound/final). Rollback follows reverse order, one behavior at a time. The first slice names Risk items 3/4; later slices reuse its state helpers.
+- L15 Slice 1 standalone snapshot: 30/30 tests; lint passes with the existing parser notice; Astro check 0 errors/0 warnings/0 hints; static build 1 page. Storage warnings and pre-hydration disabled controls ship with recovery. RED is inherited from the observed recovery failures before the implementation; slicing does not change the verified state/timer implementation. Independent feature verification already covered those exact helpers. Runtime harness: browser boundary unavailable; hook/component tests and static SSR build passed. Rollback scope: recovery hook/schema, storage hook, readiness/error UI and their tests/docs. Native review will use only this committed slice, not the remaining working-tree implementation.

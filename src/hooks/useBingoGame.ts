@@ -1,13 +1,21 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-
-const allNumbers = Array.from({ length: 90 }, (_, i) => i + 1);
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { allNumbers, defaultGame, isSavedGame } from '../lib/bingoStorage';
+import { useStoredState } from './useStoredState';
 
 export function useBingoGame() {
-  const [remaining, setRemaining] = useState<number[]>([...allNumbers]);
-  const [called, setCalled] = useState<number[]>([]);
-  const [current, setCurrent] = useState<number | null>(null);
+  const {
+    value: saved,
+    setValue: setSaved,
+    ready,
+    storageError,
+  } = useStoredState('bingo-game', defaultGame, isSavedGame);
+  const { called, intervalSeconds } = saved;
+  const current = called.at(-1) ?? null;
+  const remaining = useMemo(() => {
+    const calledSet = new Set(called);
+    return allNumbers.filter((n) => !calledSet.has(n));
+  }, [called]);
   const [isAutoDraw, setIsAutoDraw] = useState(false);
-  const [intervalSeconds, setIntervalSecondsState] = useState(3);
   const [restartMessage, setRestartMessage] = useState(false);
 
   const remainingRef = useRef(remaining);
@@ -19,6 +27,7 @@ export function useBingoGame() {
   }, [remaining]);
 
   const drawNumber = useCallback(() => {
+    if (!ready) return;
     const pool = remainingRef.current;
     if (pool.length === 0) {
       setIsAutoDraw(false);
@@ -26,23 +35,18 @@ export function useBingoGame() {
     }
     const index = Math.floor(Math.random() * pool.length);
     const number = pool[index];
-    setCurrent(number);
-    setCalled((prev) => [...prev, number]);
-    setRemaining((prev) => {
-      const next = prev.filter((n) => n !== number);
-      if (next.length === 0) {
-        setIsAutoDraw(false);
-      }
-      return next;
-    });
-  }, []);
+    // Update synchronously so rapid/batched draws cannot reuse the same number.
+    remainingRef.current = pool.filter((n) => n !== number);
+    setSaved((prev) => ({ ...prev, called: [...prev.called, number] }));
+    if (pool.length === 1) setIsAutoDraw(false);
+  }, [ready, setSaved]);
 
   // Auto-draw interval
   useEffect(() => {
-    if (!isAutoDraw) return;
+    if (!isAutoDraw || !ready) return;
     const id = setInterval(drawNumber, intervalSeconds * 1000);
     return () => clearInterval(id);
-  }, [isAutoDraw, intervalSeconds, drawNumber]);
+  }, [isAutoDraw, intervalSeconds, drawNumber, ready]);
 
   // Unmount cleanup for restartMessage timeout
   useEffect(() => {
@@ -54,9 +58,8 @@ export function useBingoGame() {
   }, []);
 
   function resetGame() {
-    setRemaining([...allNumbers]);
-    setCalled([]);
-    setCurrent(null);
+    remainingRef.current = [...allNumbers];
+    setSaved((prev) => ({ ...prev, called: [] }));
     setIsAutoDraw(false);
     setRestartMessage(true);
     if (restartTimeoutRef.current !== null) {
@@ -73,8 +76,8 @@ export function useBingoGame() {
   }
 
   function setIntervalSeconds(n: number) {
-    if (n >= 1) {
-      setIntervalSecondsState(n);
+    if (Number.isFinite(n) && n >= 1) {
+      setSaved((prev) => ({ ...prev, intervalSeconds: n }));
     }
   }
 
@@ -85,6 +88,8 @@ export function useBingoGame() {
     isAutoDraw,
     intervalSeconds,
     restartMessage,
+    ready,
+    storageError,
     drawNumber,
     resetGame,
     toggleAutoDraw,

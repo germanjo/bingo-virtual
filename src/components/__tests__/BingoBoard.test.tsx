@@ -4,6 +4,7 @@ import BingoBoard from '../BingoBoard';
 
 describe('BingoBoard', () => {
   beforeEach(() => {
+    localStorage.clear();
     vi.useFakeTimers();
   });
 

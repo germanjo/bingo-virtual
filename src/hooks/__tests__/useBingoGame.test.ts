@@ -4,6 +4,7 @@ import { useBingoGame } from '../useBingoGame';
 
 describe('useBingoGame', () => {
   beforeEach(() => {
+    localStorage.clear();
     vi.useFakeTimers();
   });
 
@@ -24,6 +25,74 @@ describe('useBingoGame', () => {
       expect(result.current.isAutoDraw).toBe(false);
       expect(result.current.intervalSeconds).toBe(3);
       expect(result.current.restartMessage).toBe(false);
+    });
+  });
+
+  describe('local recovery', () => {
+    it('recovers the sequence and interval after remount, with auto-draw paused', () => {
+      const first = renderHook(() => useBingoGame());
+      act(() => first.result.current.drawNumber());
+      act(() => first.result.current.setIntervalSeconds(5));
+      act(() => first.result.current.toggleAutoDraw());
+      const called = [...first.result.current.called];
+      first.unmount();
+      const second = renderHook(() => useBingoGame());
+      expect(second.result.current.called).toEqual(called);
+      expect(second.result.current.current).toBe(called[0]);
+      expect(second.result.current.remaining).toHaveLength(89);
+      expect(second.result.current.intervalSeconds).toBe(5);
+      expect(second.result.current.isAutoDraw).toBe(false);
+      act(() => {
+        vi.advanceTimersByTime(10000);
+      });
+      expect(second.result.current.called).toEqual(called);
+    });
+
+    it('persists reset so a completed game cannot reappear after remount', () => {
+      const first = renderHook(() => useBingoGame());
+      for (let i = 0; i < 90; i++) act(() => first.result.current.drawNumber());
+      act(() => first.result.current.resetGame());
+      first.unmount();
+      const second = renderHook(() => useBingoGame());
+      expect(second.result.current.called).toEqual([]);
+      expect(second.result.current.remaining).toHaveLength(90);
+    });
+
+    it.each([
+      '{broken',
+      JSON.stringify({ version: 1, called: [2, 2], intervalSeconds: 3 }),
+      JSON.stringify({ version: 1, called: [91], intervalSeconds: 3 }),
+      JSON.stringify({ version: 1, called: [1.5], intervalSeconds: 3 }),
+      JSON.stringify({ version: 1, called: [2], intervalSeconds: 0 }),
+      JSON.stringify({ version: 2, called: [2], intervalSeconds: 3 }),
+    ])('ignores invalid saved games: %s', (saved) => {
+      localStorage.setItem('bingo-game', saved);
+      const { result } = renderHook(() => useBingoGame());
+      expect(result.current.called).toEqual([]);
+      expect(result.current.intervalSeconds).toBe(3);
+      expect(result.current.remaining).toHaveLength(90);
+    });
+
+    it('keeps playing if browser storage is blocked', () => {
+      const read = vi
+        .spyOn(Storage.prototype, 'getItem')
+        .mockImplementation(() => {
+          throw new Error('Storage blocked');
+        });
+      const write = vi
+        .spyOn(Storage.prototype, 'setItem')
+        .mockImplementation(() => {
+          throw new Error('Quota exceeded');
+        });
+      try {
+        const { result } = renderHook(() => useBingoGame());
+        act(() => result.current.drawNumber());
+        expect(result.current.called).toHaveLength(1);
+        expect(result.current.storageError).toBe(true);
+      } finally {
+        read.mockRestore();
+        write.mockRestore();
+      }
     });
   });
 

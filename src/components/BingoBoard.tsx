@@ -12,6 +12,16 @@ export default function BingoBoard() {
     <div className="flex min-h-screen flex-col items-center bg-pink-100 p-8">
       <h1 className="mb-6 text-4xl font-bold text-rose-700">🎉 Bingo 🎉</h1>
 
+      {game.storageError && (
+        <p
+          role="alert"
+          className="mb-4 max-w-md rounded bg-amber-100 p-3 text-amber-950"
+        >
+          No se pudo guardar en este navegador. Puedes seguir jugando, pero los
+          cambios podrían perderse al cerrar.
+        </p>
+      )}
+
       <AnimatePresence>
         {game.restartMessage && (
           <motion.div
@@ -38,7 +48,9 @@ export default function BingoBoard() {
       <div className="mb-4 flex flex-wrap justify-center gap-4">
         <button
           onClick={game.drawNumber}
-          disabled={game.remaining.length === 0 || game.isAutoDraw}
+          disabled={
+            !game.ready || game.remaining.length === 0 || game.isAutoDraw
+          }
           className="cursor-pointer rounded-xl bg-rose-600 px-6 py-2 text-lg text-white hover:bg-rose-700 disabled:opacity-50"
         >
           {game.remaining.length === 0 ? '¡Fin del juego!' : 'Sacar número'}
@@ -46,7 +58,7 @@ export default function BingoBoard() {
 
         <button
           onClick={game.toggleAutoDraw}
-          disabled={game.remaining.length === 0}
+          disabled={!game.ready || game.remaining.length === 0}
           className={`cursor-pointer rounded-xl px-6 py-2 text-lg ${game.isAutoDraw ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'} text-white`}
         >
           {game.isAutoDraw ? 'Detener' : 'Auto'}
@@ -54,6 +66,7 @@ export default function BingoBoard() {
 
         <button
           onClick={game.resetGame}
+          disabled={!game.ready}
           className="cursor-pointer rounded-xl bg-yellow-500 px-6 py-2 text-lg text-black hover:bg-yellow-600"
         >
           Reiniciar
@@ -75,6 +88,7 @@ export default function BingoBoard() {
           className="w-24 rounded border border-gray-300 px-3 py-1 text-center"
           min={1}
           step={1}
+          disabled={!game.ready}
         />
       </div>
 
