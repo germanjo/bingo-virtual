@@ -1,7 +1,7 @@
 # Game experience
 
 Objective: local game recovery, primary color, optional sound and clear game completion. Branch: `feat/game-experience`.
-Delivery: stacked-to-main (user-selected); approximately 800 authored changed lines, no push/PR. Runner: Vitest, ESLint, Prettier, Astro check/build.
+Delivery: stacked-to-main (user-selected); 4 behavioral slices / 870 authored changed lines before passive closeout notes, no push/PR. Runner: Vitest, ESLint, Prettier, Astro check/build.
 
 ## Specs
 
@@ -15,8 +15,27 @@ Delivery: stacked-to-main (user-selected); approximately 800 authored changed li
 
 - T1 [S1,S5] inline, complete: persistence with validated storage and hook regressions. Risk: item 3 (shared draw/reset state), item 4 (timer and hydration ordering). Commit: `9f06286`; native review approved and acknowledged.
 - T2 [S2,S5] inline, complete: color preferences and board styling with contrast tests. Commit: `c4f4d8d`; native medium/under_budget, pending in the open review slice.
-- T3 [S3,S4,S5] inline, completion committed as `dc556e6`; optional browser audio/integration slice checks passed, commit pending. Component/audio tests and README stay with their behavior.
-- T4 [S1-S5] independent verification passed; slice checks, local commits and native review pending. Chain strategy: stacked-to-main. Commit: pending.
+- T3 [S3,S4,S5] inline, complete: completion committed as `dc556e6`; optional browser audio/integration committed as `873b84f`. Component/audio tests and README stay with their behavior.
+- T4 [S1-S5] automated verification complete: independent verification, all standalone slice checks and final workspace checks passed. Native recovery review approved/acknowledged; remaining slice medium/under_budget, review not due. Manual browser layout/device-audio proof unavailable and not claimed.
+
+### Local delivery stack
+
+| Order | Local branch              | Behavioral commit                        | Changed lines       | Result                                                  |
+| ----- | ------------------------- | ---------------------------------------- | ------------------- | ------------------------------------------------------- |
+| 1     | `feat/game-recovery`      | `9f06286`                                | 288                 | Recovery; 30 tests, native review approved/acknowledged |
+| 2     | `feat/game-primary-color` | `c4f4d8d`                                | 185                 | Color/preferences; 42 tests, medium/under_budget        |
+| 3     | `feat/game-completion`    | `dc556e6`                                | 57                  | Completion feedback; 43 tests, medium/under_budget      |
+| 4     | `feat/game-experience`    | `873b84f` plus passive tracking closeout | 340 before closeout | Sound/integration; 50 tests, remaining review not due   |
+
+```text
+main (eb8a8b0)
+  -> feat/game-recovery
+    -> feat/game-primary-color
+      -> feat/game-completion
+        -> feat/game-experience
+```
+
+Each future PR contains one behavioral slice with its tests/docs; the final slice also includes passive tracking closure. Compare against the immediate local predecessor while preparing the stack, then rebase/retarget the next slice after its predecessor lands on main. No PR exists yet. No tracker PR is needed for stacked-to-main. Cards, images and PWA remain out of scope. Reverting follows reverse stack order so dependents are removed first.
 
 ## Log
 
@@ -42,3 +61,7 @@ Delivery: stacked-to-main (user-selected); approximately 800 authored changed li
 - L20 Slice 3 standalone snapshot: 43/43 tests; lint passes; Astro check 0 errors/0 warnings/0 hints; static build 1 page. Completion counter/banner, finished-game recovery and restart assertions ship together; existing state/timer helpers are unchanged. Risk: none. Rollback scope: progress/status banner, completion-specific component assertions and the matching README instructions. Browser visual proof remains unavailable.
 - L21 Slice 3 committed as `dc556e6`, branch `feat/game-completion`, 55 additions + 2 deletions = 57 lines. Native assessment of the open slice `9f06286..dc556e6`: medium, 240 net changed lines, review_due=false/under_budget. Reviewed boundary remains `9f06286`; no reviewer or consent was started for these medium candidates. The final audio slice is best-effort and does not change game/timer ordering or the persisted schema; its full-feature independent sound/failure probes already passed.
 - L22 Slice 4 standalone snapshot: 50/50 tests; lint passes; Astro check 0 errors/0 warnings/0 hints; static build 1 page. Includes the sound hook, default-off toggle, sound-unit tests, actual-board audio/failure integration and the independent cross-feature regression probes. Risk: none for this slice (best-effort audio is independent of gameplay ordering and does not change persisted formats); feature Risk items 3/4 were verified/reviewed in slice 1. Runtime harness: browser layout and physical audio device unavailable, hook/component/integration/SSR checks passed. Rollback scope: sound hook/toggle/control wrappers, sound tests, cross-feature probes and matching README text. Native assessment follows the commit before feature completion.
+- L23 Slice 4 committed as `873b84f`, 334 additions + 6 deletions = 340 lines. All four behavioral slices are below 400 lines; their running authored total is 870. Native assessment of `9f06286..873b84f`: medium, 574 net changed lines, review_due=false, reason `under_budget`. No new review is started; the reviewed boundary remains `9f06286`, not an invented approval for the later UI/audio commits.
+- L24 Final actual-workspace seam check: 50/50 tests, lint and format pass; git diff --check passes. The complete source matched all four commits with a clean working tree before these passive tracking updates. No correction was needed after independent or native review. All original requested behavior is covered by the automated checks; browser layout and real-device audio remain explicitly unverified.
+- L25 Four scratch copies, their external caches, dependency junctions and ignored staging scripts/manifest were removed after verification. Junctions were removed first, absolute TEMP target and remaining reparse points were checked, and workspace dependencies were preserved. Native Astro status confirms local preview http://127.0.0.1:4321 remains running, pid 8720. Engram mirroring remains blocked by missing host-session registration.
+- L26 Local implementation and stack preparation are complete. Next user-owned steps: visually/audio-test the local preview; authorize any future destination/credential and operation before push/PR creation. The existing two unpublished commits already on local main are not silently included in a remote-delivery authorization. Passive closeout notes are committed separately without changing feature code or reopening review for unchanged content.
