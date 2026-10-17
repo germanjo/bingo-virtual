@@ -30,6 +30,7 @@ Open http://localhost:4321.
 - The 10x9 grid shows every drawn number in the selected primary color; the latest stays highlighted in yellow.
 - **Auto** runs a hands-free draw loop. **Detener** pauses it. The interval (in seconds) is configurable below the buttons.
 - **Reiniciar** starts a new game.
+- The progress counter and completion banner make it clear when all 90 numbers have been drawn. The completed board stays visible until restart.
 
 ## Local recovery and personalization
 
@@ -54,7 +55,7 @@ Storage uses versioned `bingo-game` and `bingo-preferences` localStorage entries
 ```
 src/
   components/
-    BingoBoard.tsx   # controls, preferences and grid
+    BingoBoard.tsx   # controls, preferences, progress and grid
   hooks/
     useBingoGame.ts  # draw/reset state and timers
     useStoredState.ts # post-mount localStorage recovery and saving

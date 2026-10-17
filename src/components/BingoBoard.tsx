@@ -133,6 +133,26 @@ export default function BingoBoard() {
         />
       </fieldset>
 
+      <p className="mb-3 font-medium text-gray-800">
+        {game.called.length} de 90 números sorteados
+      </p>
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="max-w-md text-center"
+      >
+        {finished && (
+          <div className="mb-4 rounded-xl border-2 border-yellow-400 bg-yellow-50 p-5 text-gray-900">
+            <h2 className="mb-2 text-2xl font-bold">🎉 ¡Partida finalizada!</h2>
+            <p>Se sortearon los 90 números</p>
+            <p className="mt-1 text-sm">
+              Revisa el tablero y presiona Reiniciar para comenzar otra partida.
+            </p>
+          </div>
+        )}
+      </div>
+
       <div className="mt-4 grid w-full max-w-lg grid-cols-10 gap-1 sm:gap-2">
         {allNumbers.map((num) => (
           <div

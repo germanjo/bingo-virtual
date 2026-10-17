@@ -96,7 +96,18 @@ describe('BingoBoard', () => {
     expect(endButton).toBeInTheDocument();
     expect(endButton).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Auto' })).toBeDisabled();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Se sortearon los 90 números',
+    );
+    expect(screen.getByText('90 de 90 números sorteados')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Reiniciar' }));
+    expect(
+      screen.queryByText('Se sortearon los 90 números'),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('0 de 90 números sorteados')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Sacar número' })).toBeEnabled();
   });
+
   it('remembers primary color preferences independently of a game reset', () => {
     const first = render(<BingoBoard />);
     fireEvent.change(screen.getByLabelText('Color principal'), {
@@ -114,5 +125,24 @@ describe('BingoBoard', () => {
       '--bingo-primary': '#ffffff',
       '--bingo-contrast': '#000000',
     });
+  });
+
+  it('restores a finished board without restarting the draw loop', () => {
+    localStorage.setItem(
+      'bingo-game',
+      JSON.stringify({
+        version: 1,
+        called: Array.from({ length: 90 }, (_, i) => i + 1),
+        intervalSeconds: 2,
+      }),
+    );
+    render(<BingoBoard />);
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Se sortearon los 90 números',
+    );
+    expect(
+      screen.getByRole('button', { name: '¡Fin del juego!' }),
+    ).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Auto' })).toBeDisabled();
   });
 });
